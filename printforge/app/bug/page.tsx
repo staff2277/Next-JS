@@ -16,7 +16,7 @@ const DebugPage = () => {
         <p className="text-toggleOrange">Custom toggle-orange color</p>
         <p className="text-heroLarge">Custom hero-large size</p>
         <p className="font-montAlt">Custom mont-alt font</p>
-        <p className="text-primary-button">Custom primary-button size</p>
+        <p className="text-primaryButton">Custom primary-button size</p>
       </div>
 
       {/* Test with CSS variables as fallback */}
