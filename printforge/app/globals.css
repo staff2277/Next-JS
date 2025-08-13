@@ -1,0 +1,7 @@
+/* globals.css */
+@import "tailwindcss/preflight"; /* replaces @tailwind base */
+@import "tailwindcss/utilities"; /* replaces @tailwind utilities */
+
+html {
+  font-family: var(--font-albert-sans);
+}
