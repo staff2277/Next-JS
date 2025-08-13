@@ -13,9 +13,9 @@ const DebugPage = () => {
 
       {/* Test custom classes with kebab-case */}
       <div className="mb-4">
-        <p className="text-toggle-orange">Custom toggle-orange color</p>
-        <p className="text-hero-large">Custom hero-large size</p>
-        <p className="font-mont-alt">Custom mont-alt font</p>
+        <p className="text-toggleOrange">Custom toggle-orange color</p>
+        <p className="text-heroLarge">Custom hero-large size</p>
+        <p className="font-montAlt">Custom mont-alt font</p>
         <p className="text-primary-button">Custom primary-button size</p>
       </div>
 

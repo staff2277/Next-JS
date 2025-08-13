@@ -1,5 +1,6 @@
-/* globals.css */
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 html {
   font-family: var(--font-albert-sans);

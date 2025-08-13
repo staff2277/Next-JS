@@ -8,17 +8,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "toggle-orange": "#F77429",
+        toggleOrange: "#F77429",
       },
       fontFamily: {
-        "mont-alt": ["var(--font-montserrat-alt)", "sans-serif"],
-        "albert-sans": ["var(--font-albert-sans)", "sans-serif"],
+        montAlt: ["var(--font-montserrat-alt)", "sans-serif"],
+        albertSans: ["var(--font-albert-sans)", "sans-serif"],
       },
       fontSize: {
-        "primary-small": "1rem",
-        "hero-large": "3.5rem",
-        "hero-medium": "1.75rem",
-        "primary-button": "20px",
+        primarySmall: "1rem",
+        heroLarge: "3.5rem",
+        heroMedium: "1.75rem",
+        primaryButton: "20px",
       },
     },
   },
