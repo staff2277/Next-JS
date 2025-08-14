@@ -24,18 +24,20 @@ export default function RootLayout({
       className={`${montserratAlternates.variable} ${albertSans.variable}`}
     >
       <body>
-        <header>
-          <nav className="uppercase flex justify-between border items-center px-[2rem]">
+        <header className=" ">
+          <nav className="uppercase max-sm:py-[1rem] flex justify-between border border-purple-700 items-center lg:px-[2rem] sm:px-[1rem] max-sm:px-[.3rem] ">
             <div>
-              <img src="/logo-1.svg" alt="logo" />
+              <img className="max-sm:w-[150px]" src="/logo-1.svg" alt="logo" />
             </div>
-            <ul className="flex gap-[40px] text-[.9rem]">
+            <ul className="flex sm:gap-[40px] max-sm:gap-[10px] text-[.9rem]">
               <li>3d Models</li>
               <li>3d About</li>
             </ul>
           </nav>
         </header>
-        <div className="px-[3rem]">{children}</div>
+        <div className="lg:px-[3rem] sm:px-[1.5rem] max-sm:px-[1rem] ">
+          {children}
+        </div>
       </body>
     </html>
   );
