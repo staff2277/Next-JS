@@ -2,7 +2,7 @@ import React from "react";
 
 const Home = () => {
   return (
-    <div className="h-[90vh] flex justify-between xl:px-[3rem] lg:px-[0rem] max-md:gap-3 max-sm:gap-3 max-sm:flex-col">
+    <main className="h-[90vh] flex justify-between xl:px-[3rem] lg:px-[0rem] max-md:gap-3 max-sm:gap-3 max-sm:flex-col">
       <div className="w-1/2 flex flex-col justify-center max-sm:w-full max-sm:h-1/2 ">
         <p className="uppercase mb-[20px] sm:text-[.9rem]">
           Your go-to platform for 3D printing files
@@ -25,7 +25,7 @@ const Home = () => {
           <img className="" src="hero-image 1.png" alt="Hero image" />
         </span>
       </div>
-    </div>
+    </main>
   );
 };
 
