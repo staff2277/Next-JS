@@ -5,7 +5,9 @@ const Navbar = () => {
   return (
     <nav className="uppercase max-sm:py-[1rem] flex justify-between border border-purple-700 items-center lg:px-[2rem] sm:px-[1rem] max-sm:px-[.3rem] ">
       <div>
-        <img className="max-sm:w-[150px]" src="/logo-1.svg" alt="logo" />
+        <Link href={"/"}>
+          <img className="max-sm:w-[150px]" src="/logo-1.svg" alt="logo" />
+        </Link>
       </div>
       <ul className="flex sm:gap-[40px] max-sm:gap-[10px] text-[.9rem]">
         <li>
