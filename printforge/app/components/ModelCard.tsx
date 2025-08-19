@@ -1,7 +1,6 @@
 import React from "react";
 import type { ModelCardProps } from "../types";
 import Image from "next/image";
-import { log } from "console";
 
 const ModelCard = ({ model }: ModelCardProps) => {
   return (
