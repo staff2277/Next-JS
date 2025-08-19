@@ -1,13 +1,20 @@
 import React from "react";
 import ModelCard from "../components/ModelCard";
+import { getAllModels } from "../lib/models";
 
-const ModelsPage = () => {
+const ModelsPage = async () => {
+  let modelsData = await getAllModels();
+
   return (
     <section className="border border-black md:mt-[3rem]">
       <h1 className="font-montAlt py-[1rem] font-bold text-[2rem]">
         3D Models
       </h1>
-      <ModelCard />
+      {modelsData ? (
+        modelsData.map((model) => <ModelCard key={model.id} model={model} />)
+      ) : (
+        <p>Loading...</p>
+      )}
     </section>
   );
 };

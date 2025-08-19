@@ -1,6 +1,6 @@
 import React from "react";
 
-const ModelCard = () => {
+const ModelCard = ({ model }) => {
   return (
     <article className="border border-green-700 w-fit rounded-2xl">
       <figure className="w-full rounded-xl">

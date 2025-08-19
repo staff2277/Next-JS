@@ -1,3 +1,5 @@
-import modelsData from "@/app/data";
+import modelsData from "@/app/data/models.json";
 
-export async function getAllModels() {}
+export async function getAllModels() {
+  return modelsData;
+}
