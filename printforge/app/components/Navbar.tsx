@@ -5,7 +5,7 @@ import NavLogo from "@/public/logo-1.svg";
 
 const Navbar = () => {
   return (
-    <nav className="uppercase max-sm:py-[1rem] flex justify-between border border-purple-700 items-center lg:px-[2rem] sm:px-[1rem] max-sm:px-[.3rem] ">
+    <nav className="uppercase fixed w-full top-0 max-sm:py-[1rem] flex justify-between bg-white items-center lg:px-[2rem] sm:px-[1rem] max-sm:px-[.3rem] ">
       <div>
         <Link href={"/"}>
           <Image

@@ -25,7 +25,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <header className=" ">
           <Navbar />
         </header>
-        <div className="lg:px-[3rem] sm:px-[1.5rem] max-sm:px-[1rem] ">
+        <div className="lg:px-[3rem] sm:px-[1.5rem] max-sm:px-[1rem] my-[3rem]">
           {children}
         </div>
       </body>

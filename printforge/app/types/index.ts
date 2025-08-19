@@ -11,3 +11,7 @@ export type Model = {
   category: string;
   dateAdded: string;
 };
+
+export type ModelCardProps = {
+  model: Model;
+};
