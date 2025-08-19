@@ -11,7 +11,7 @@ const ModelsPage = async () => {
         3D Models
       </h1>
       {modelsData ? (
-        modelsData.map((model) => <ModelCard key={model.id} model={model} />)
+        modelsData.map((model) => <ModelCard key={model.id} models={model} />)
       ) : (
         <p>Loading...</p>
       )}

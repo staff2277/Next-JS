@@ -1,4 +1,5 @@
 import "./globals.css";
+import type { RootLayoutProps } from "./types";
 import Navbar from "./components/Navbar";
 import { Montserrat_Alternates, Albert_Sans } from "next/font/google";
 
@@ -14,11 +15,7 @@ const albertSans = Albert_Sans({
   variable: "--font-albert-sans",
 });
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html
       lang="en"
