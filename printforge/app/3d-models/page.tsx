@@ -10,7 +10,7 @@ const ModelsPage = async () => {
       <h1 className="font-montAlt py-[1rem] font-bold text-[2rem]">
         3D Models
       </h1>
-      <div className="grid xl:grid-cols-[repeat(auto-fit,minmax(400px,1fr))] max-xl:grid-cols-[repeat(3,minmax(200px,1fr))] max-lg:grid-cols-[repeat(2,minmax(200px,1fr))] max-sm:grid-cols-1 gap-5">
+      <div className="grid xl:grid-cols-[repeat(auto-fit,minmax(350px,1fr))] max-xl:grid-cols-[repeat(3,minmax(200px,1fr))] max-lg:grid-cols-[repeat(2,minmax(200px,1fr))] max-sm:grid-cols-1 gap-5">
         {modelsData ? (
           modelsData.map((model) => <ModelCard key={model.id} model={model} />)
         ) : (

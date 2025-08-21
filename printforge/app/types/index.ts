@@ -15,3 +15,11 @@ export type Model = {
 export type ModelCardProps = {
   model: Model;
 };
+
+export type PageProps = {
+  params: {
+    id: number;
+  };
+};
+
+export type AllModels = {};

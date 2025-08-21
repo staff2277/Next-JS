@@ -26,9 +26,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <header className=" ">
           <Navbar />
         </header>
-        <div className="flex lg:px-[3rem] sm:px-[1.5rem] max-sm:px-[1rem] my-[3rem]">
-          <aside className="flex items-center h-[94vh] fixed w-[18%] border-2 border-red-500">
-            <ul className="w-full flex flex-col ">
+        <div className="flex max-lg:flex-col lg:px-[3rem] sm:px-[1.5rem] max-sm:px-[1rem] my-[3rem]">
+          <aside className="fle hidden items-center lg:h-[94vh] lg:fixed lg:w-[18%] border-2 border-red-500 bg-white">
+            <ul className="w-full flex lg:flex-col ">
               <Link href={"#"}>
                 <li className="uppercase text-[.85rem] hover:border-l-2 border-[#F77429] hover:text-[#F77429] p-[10px]">
                   All
@@ -81,7 +81,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               </Link>
             </ul>
           </aside>
-          <div className="ml-[18%]">{children}</div>
+          <div className="w-full">{children}</div>
         </div>
       </body>
     </html>
