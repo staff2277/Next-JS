@@ -19,10 +19,20 @@ const Navbar = () => {
       </div>
       <ul className="flex sm:gap-[40px] max-sm:gap-[10px] text-[.9rem]">
         <li>
-          <Link href={"/3d-models"}>3d Models</Link>
+          <Link
+            href={"/3d-models"}
+            className="hover:text-[#F77429] hover:border-b-[1px] border-[#F77429] py-1"
+          >
+            3d Models
+          </Link>
         </li>
         <li>
-          <Link href={"/about"}>About</Link>
+          <Link
+            href={"/about"}
+            className="hover:text-[#F77429] hover:border-b-[1px] border-[#F77429] py-1"
+          >
+            About
+          </Link>
         </li>
         <li></li>
       </ul>
