@@ -26,7 +26,7 @@ const ModelCard = ({ model }: ModelCardProps) => {
         <p className="border text-[.85rem] border-[#A1A1A1] py-[8.92px] px-5 w-fit rounded-3xl">
           {model?.category}
         </p>
-        <span className="flex items-center gap-3 mt-[15px]">
+        <span className="flex items-center gap-3 mt-[15px] m">
           <span>
             <img src="/likes.png" alt="likes icon" />
           </span>
