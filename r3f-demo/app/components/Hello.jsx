@@ -4,7 +4,7 @@ import { MeshTransmissionMaterial, Text, useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useControls } from "leva";
 
-const Hero = () => {
+const Hello = () => {
   const mesh = useRef();
   const { nodes } = useGLTF("/models/torus.glb");
   const { viewport } = useThree();
@@ -41,4 +41,4 @@ const Hero = () => {
   );
 };
 
-export default Hero;
+export default Hello;
