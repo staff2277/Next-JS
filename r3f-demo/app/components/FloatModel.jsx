@@ -1,105 +1,131 @@
-import React, { useEffect, useRef } from "react";
-import { Float, useGLTF } from "@react-three/drei";
-import { useMotionValue } from "motion/react";
-import { motion } from "framer-motion-3d";
+import React, { useEffect, useState } from "react";
+import { useGLTF, Float } from "@react-three/drei";
+import { useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 
-export function FloatModel(props) {
-  const { nodes, materials } = useGLTF("/models/float.glb");
-
-  const mouseX = useMotionValue(0);
-
-  const manageMouse = (event) => {
-    const percentage = event.clientX / window.innerWidth;
-
-    mouseX.set(percentage);
-  };
+export default function FloatModel({ mouse }) {
+  const [activeShape, setActiveShape] = useState(1);
 
   useEffect(() => {
-    window.addEventListener("mousemove", manageMouse);
-    return window.removeEventListener("mouseover", manageMouse);
-  });
+    setTimeout(() => {
+      if (activeShape == 11) {
+        setActiveShape(1);
+      } else {
+        setActiveShape(activeShape + 1);
+      }
+    }, 2000);
+  }, [activeShape]);
 
+  const { nodes } = useGLTF("/models/float.glb");
   return (
-    <group {...props} dispose={null}>
-      <Float>
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Cube.geometry}
-          material={nodes.Cube.material}
-          position={[-2.374, 1.381, -3.078]}
-          rotation={[0.198, 0.581, 0.586]}
-        />
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Icosphere.geometry}
-          material={nodes.Icosphere.material}
-          position={[-2.308, -0.811, 0.419]}
-          rotation={[-0.778, -0.254, -1.323]}
-        />
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Icosphere001.geometry}
-          material={nodes.Icosphere001.material}
-          position={[-0.21, 3.489, 3.439]}
-          rotation={[-0.538, -0.352, -0.77]}
-        />
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Cube001.geometry}
-          material={nodes.Cube001.material}
-          position={[-0.664, -2.459, -2.033]}
-          rotation={[-0.638, -0.964, 0.078]}
-        />
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Torus.geometry}
-          material={nodes.Torus.material}
-          position={[2.848, 0.471, 3.176]}
-          rotation={[0.145, 0.292, 0.311]}
-        />
-        <motion.mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Cylinder.geometry}
-          material={nodes.Cylinder.material}
-          position-x={mouseX}
-          position-y={0}
-          position-z={0}
-          rotation={[-0.301, 0.15, 0.497]}
-          scale={[0.242, 0.956, 0.242]}
-        />
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Torus001.geometry}
-          material={nodes.Torus001.material}
-          position={[-3.716, -0.235, 0]}
-          rotation={[-0.295, 0.23, 0.494]}
-        />
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Torus002.geometry}
-          material={nodes.Torus002.material}
-          position={[2.877, 2.371, 0.051]}
-          rotation={[-1.533, 0.373, -2.302]}
-        />
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Cone.geometry}
-          material={nodes.Cone.material}
-          position={[-4.245, 2.43, 0]}
-          rotation={[0.053, 0.084, 0.098]}
-        />
-      </Float>
+    <group>
+      <Mesh
+        node={nodes.Cone}
+        multiplier={2.4}
+        mouse={mouse}
+        isActive={activeShape == 1}
+      />
+      <Mesh
+        node={nodes.Cube}
+        multiplier={2.4}
+        mouse={mouse}
+        isActive={activeShape == 2}
+      />
+      <Mesh
+        node={nodes.Cube001}
+        multiplier={1.2}
+        mouse={mouse}
+        isActive={activeShape == 3}
+      />
+      <Mesh
+        node={nodes.Cylinder}
+        multiplier={1}
+        mouse={mouse}
+        isActive={activeShape == 4}
+      />
+      <Mesh
+        node={nodes.Icosphere}
+        multiplier={1.8}
+        mouse={mouse}
+        isActive={activeShape == 5}
+      />
+      <Mesh
+        node={nodes.Icosphere001}
+        multiplier={1.8}
+        mouse={mouse}
+        isActive={activeShape == 6}
+      />
+      <Mesh
+        node={nodes.Torus}
+        multiplier={2}
+        mouse={mouse}
+        isActive={activeShape == 7}
+      />
+      <Mesh
+        node={nodes.Torus001}
+        multiplier={1.2}
+        mouse={mouse}
+        isActive={activeShape == 8}
+      />
+      <Mesh
+        node={nodes.Torus002}
+        multiplier={1.6}
+        mouse={mouse}
+        isActive={activeShape == 9}
+      />
     </group>
   );
 }
 
 useGLTF.preload("/models/float.glb");
+
+function Mesh({ node, multiplier, mouse, isActive }) {
+  const { geometry, material, position, scale, rotation } = node;
+  const a = multiplier / 2;
+  const rotationX = useTransform(
+    mouse.x,
+    [0, 1],
+    [rotation.x - a, rotation.x + a],
+  );
+  const rotationY = useTransform(
+    mouse.y,
+    [0, 1],
+    [rotation.y - a, rotation.y + a],
+  );
+  const positionX = useTransform(
+    mouse.x,
+    [0, 1],
+    [position.x - multiplier * 2, position.x + multiplier * 2],
+  );
+  const positionY = useTransform(
+    mouse.y,
+    [0, 1],
+    [position.y + multiplier * 2, position.y - multiplier * 2],
+  );
+
+  const getRandomMultiplier = () => {
+    return Math.floor(Math.random() * 2) * (Math.round(Math.random()) ? 1 : -1);
+  };
+
+  return (
+    <Float>
+      <motion.mesh
+        castShadow={true}
+        receiveShadow={true}
+        geometry={geometry}
+        material={material}
+        position={position}
+        rotation={rotation}
+        scale={scale}
+        rotation-y={rotationX}
+        rotation-x={rotationY}
+        position-x={positionX}
+        position-y={positionY}
+        animate={{
+          rotateZ: isActive ? rotation.z + getRandomMultiplier() : null,
+        }}
+        transition={{ type: "spring", stiffness: 75, damping: 100, mass: 3 }}
+      />
+    </Float>
+  );
+}
