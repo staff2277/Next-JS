@@ -9,8 +9,8 @@ const Model = ({ mouse }) => {
     const toY = gsap.quickTo(mesh.current.position, "y", { duration: 0.7 });
 
     const update = () => {
-      toX(mouse.current.x * 5);
-      toY(mouse.current.y * 5);
+      toX(mouse.current.x * 7);
+      toY(mouse.current.y * 7);
     };
     gsap.ticker.add(update);
     return () => gsap.ticker.remove(update);
