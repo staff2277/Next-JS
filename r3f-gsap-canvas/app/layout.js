@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Create Next App",
+  title: "Gsap Canvas",
   description: "Gsap R3f Canvas",
 };
 
