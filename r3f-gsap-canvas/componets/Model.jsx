@@ -19,7 +19,7 @@ const Model = ({ mouse }) => {
   return (
     <mesh ref={mesh}>
       <boxGeometry args={[3, 2, 2]} />
-      <meshStandardMaterial color={"blue"} />
+      <meshStandardMaterial color={"green"} />
     </mesh>
   );
 };
