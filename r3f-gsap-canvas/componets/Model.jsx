@@ -18,8 +18,8 @@ const Model = ({ mouse }) => {
 
   return (
     <mesh ref={mesh}>
-      <boxGeometry args={[3, 2, 2]} />
-      <meshStandardMaterial color={"green"} />
+      <boxGeometry args={[3, 3, 3]} />
+      <meshStandardMaterial color={"yellow"} />
     </mesh>
   );
 };
