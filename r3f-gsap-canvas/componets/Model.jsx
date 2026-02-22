@@ -6,7 +6,7 @@ const Model = ({ mouse }) => {
   const mesh = useRef(null);
   useGSAP(() => {
     const toX = gsap.quickTo(mesh.current.position, "x", { duration: 0.7 });
-    const toY = gsap.quickTo(mesh.current.position, "y", { duration: 0.7 });
+    const toY = gsap.quickTo(mesh.current.position, "y", { duration: 0.8 });
 
     const update = () => {
       toX(mouse.current.x * 7);
