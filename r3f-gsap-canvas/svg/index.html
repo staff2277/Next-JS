@@ -1,14 +1,1470 @@
+```html
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="styles.css" />
-    <title>Svg Practice</title>
+    <title>Smart Water Bottle - HydroSync Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        overflow: hidden;
+        background: #050510;
+        font-family: "Rajdhani", sans-serif;
+        color: #fff;
+      }
+
+      #canvas-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        pointer-events: none;
+      }
+
+      .brand-header {
+        position: absolute;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+      }
+
+      .brand-header h1 {
+        font-family: "Orbitron", sans-serif;
+        font-size: 2.2rem;
+        font-weight: 900;
+        letter-spacing: 6px;
+        background: linear-gradient(135deg, #00d4ff, #00ff88, #00d4ff);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientShift 3s ease infinite;
+        text-shadow: none;
+        filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.3));
+      }
+
+      .brand-header p {
+        font-size: 0.9rem;
+        letter-spacing: 8px;
+        color: rgba(0, 212, 255, 0.5);
+        margin-top: 5px;
+        text-transform: uppercase;
+      }
+
+      @keyframes gradientShift {
+        0%,
+        100% {
+          background-position: 0% center;
+        }
+        50% {
+          background-position: 200% center;
+        }
+      }
+
+      .hud-panel {
+        position: absolute;
+        pointer-events: all;
+        background: rgba(0, 20, 40, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 212, 255, 0.15);
+        border-radius: 16px;
+        padding: 20px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .hud-panel:hover {
+        border-color: rgba(0, 212, 255, 0.4);
+        box-shadow:
+          0 0 30px rgba(0, 212, 255, 0.1),
+          inset 0 0 30px rgba(0, 212, 255, 0.05);
+      }
+
+      .panel-left {
+        top: 50%;
+        left: 30px;
+        transform: translateY(-50%);
+        width: 220px;
+      }
+
+      .panel-right {
+        top: 50%;
+        right: 30px;
+        transform: translateY(-50%);
+        width: 220px;
+      }
+
+      .panel-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: 0.7rem;
+        letter-spacing: 3px;
+        color: rgba(0, 212, 255, 0.7);
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+      }
+
+      .stat-item {
+        margin-bottom: 18px;
+      }
+
+      .stat-label {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.4);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+
+      .stat-value {
+        font-family: "Orbitron", sans-serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #00d4ff;
+        text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+      }
+
+      .stat-value .unit {
+        font-size: 0.8rem;
+        color: rgba(0, 212, 255, 0.5);
+        margin-left: 3px;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 3px;
+        margin-top: 6px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 1s ease;
+        position: relative;
+      }
+
+      .progress-fill::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        animation: shimmer 2s ease infinite;
+      }
+
+      @keyframes shimmer {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(100%);
+        }
+      }
+
+      .water-level-visual {
+        width: 100%;
+        height: 120px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 15px;
+        border: 1px solid rgba(0, 212, 255, 0.1);
+      }
+
+      .water-fill-visual {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 212, 255, 0.3),
+          rgba(0, 100, 200, 0.6)
+        );
+        transition: height 1s ease;
+        border-radius: 0 0 11px 11px;
+      }
+
+      .water-fill-visual::before {
+        content: "";
+        position: absolute;
+        top: -5px;
+        left: 0;
+        right: 0;
+        height: 10px;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(0, 212, 255, 0.8),
+          transparent
+        );
+        animation: wavePulse 2s ease infinite;
+      }
+
+      @keyframes wavePulse {
+        0%,
+        100% {
+          opacity: 0.5;
+          transform: scaleX(0.9);
+        }
+        50% {
+          opacity: 1;
+          transform: scaleX(1.1);
+        }
+      }
+
+      .water-percentage {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: "Orbitron", sans-serif;
+        font-size: 2rem;
+        font-weight: 900;
+        color: #fff;
+        text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        z-index: 2;
+      }
+
+      .color-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+
+      .color-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        pointer-events: all;
+      }
+
+      .color-btn:hover {
+        transform: scale(1.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 15px currentColor;
+      }
+
+      .color-btn.active {
+        border-color: #fff;
+        box-shadow: 0 0 20px currentColor;
+      }
+
+      .mode-btn {
+        width: 100%;
+        padding: 10px;
+        background: rgba(0, 212, 255, 0.1);
+        border: 1px solid rgba(0, 212, 255, 0.2);
+        border-radius: 10px;
+        color: #00d4ff;
+        font-family: "Rajdhani", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        pointer-events: all;
+        margin-top: 8px;
+      }
+
+      .mode-btn:hover {
+        background: rgba(0, 212, 255, 0.2);
+        border-color: rgba(0, 212, 255, 0.5);
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+      }
+
+      .mode-btn.active {
+        background: rgba(0, 212, 255, 0.3);
+        border-color: #00d4ff;
+      }
+
+      .temp-slider-container {
+        margin-top: 10px;
+      }
+
+      .temp-slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 6px;
+        background: linear-gradient(90deg, #00aaff, #ff4444);
+        border-radius: 3px;
+        outline: none;
+        cursor: pointer;
+        pointer-events: all;
+      }
+
+      .temp-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        background: #fff;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+      }
+
+      .bottom-bar {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 20px;
+        pointer-events: all;
+      }
+
+      .action-btn {
+        padding: 12px 28px;
+        background: rgba(0, 212, 255, 0.1);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        border-radius: 30px;
+        color: #00d4ff;
+        font-family: "Orbitron", sans-serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        pointer-events: all;
+      }
+
+      .action-btn:hover {
+        background: rgba(0, 212, 255, 0.25);
+        border-color: #00d4ff;
+        box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .notification {
+        position: fixed;
+        top: 100px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-20px);
+        background: rgba(0, 212, 255, 0.15);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        border-radius: 12px;
+        padding: 12px 30px;
+        font-family: "Rajdhani", sans-serif;
+        font-size: 0.9rem;
+        color: #00d4ff;
+        letter-spacing: 2px;
+        z-index: 100;
+        opacity: 0;
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        pointer-events: none;
+      }
+
+      .notification.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      .led-ring {
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 4px;
+      }
+
+      .led-dot {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #00d4ff;
+        animation: ledPulse 1.5s ease infinite;
+      }
+
+      .led-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .led-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      .led-dot:nth-child(4) {
+        animation-delay: 0.6s;
+      }
+      .led-dot:nth-child(5) {
+        animation-delay: 0.8s;
+      }
+
+      @keyframes ledPulse {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      .particle-hint {
+        position: absolute;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.2);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        animation: fadeInOut 4s ease infinite;
+      }
+
+      @keyframes fadeInOut {
+        0%,
+        100% {
+          opacity: 0;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .panel-left,
+        .panel-right {
+          position: relative;
+          top: auto;
+          left: auto;
+          right: auto;
+          transform: none;
+          width: 100%;
+          margin: 10px 0;
+        }
+
+        .overlay {
+          position: fixed;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 100px 20px 120px;
+          pointer-events: all;
+        }
+
+        .brand-header {
+          position: relative;
+          top: auto;
+          left: auto;
+          transform: none;
+          margin-bottom: 20px;
+        }
+
+        .brand-header h1 {
+          font-size: 1.5rem;
+        }
+
+        .bottom-bar {
+          position: fixed;
+          bottom: 15px;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 10px;
+        }
+      }
+
+      .corner-deco {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        border: 1px solid rgba(0, 212, 255, 0.1);
+      }
+
+      .corner-deco.tl {
+        top: 15px;
+        left: 15px;
+        border-right: none;
+        border-bottom: none;
+      }
+      .corner-deco.tr {
+        top: 15px;
+        right: 15px;
+        border-left: none;
+        border-bottom: none;
+      }
+      .corner-deco.bl {
+        bottom: 15px;
+        left: 15px;
+        border-right: none;
+        border-top: none;
+      }
+      .corner-deco.br {
+        bottom: 15px;
+        right: 15px;
+        border-left: none;
+        border-top: none;
+      }
+    </style>
   </head>
   <body>
-    <svg width="500" height="500" viewBox="0 0 300 400">
-      <circle cx="200" cy="200" r="200"></circle>
-    </svg>
+    <div id="canvas-container"></div>
+
+    <div class="overlay">
+      <div class="corner-deco tl"></div>
+      <div class="corner-deco tr"></div>
+      <div class="corner-deco bl"></div>
+      <div class="corner-deco br"></div>
+
+      <div class="brand-header">
+        <h1>HYDROSYNC PRO</h1>
+        <p>Smart Hydration</p>
+      </div>
+
+      <div class="hud-panel panel-left">
+        <div class="panel-title">● HYDRATION STATUS</div>
+
+        <div class="water-level-visual">
+          <div
+            class="water-fill-visual"
+            id="waterFill"
+            style="height: 72%"
+          ></div>
+          <div class="water-percentage" id="waterPercent">72%</div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-label">Today's Intake</div>
+          <div class="stat-value" id="intakeValue">
+            1,840<span class="unit">ml</span>
+          </div>
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              style="
+                width: 72%;
+                background: linear-gradient(90deg, #00d4ff, #00ff88);
+              "
+            ></div>
+          </div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-label">Daily Goal</div>
+          <div class="stat-value">2,500<span class="unit">ml</span></div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-label">Streak</div>
+          <div class="stat-value" style="color: #00ff88">
+            14<span class="unit">days</span>
+          </div>
+        </div>
+
+        <button class="mode-btn" onclick="drinkWater()">💧 Log Drink</button>
+      </div>
+
+      <div class="hud-panel panel-right">
+        <div class="panel-title">● BOTTLE SETTINGS</div>
+
+        <div class="stat-item">
+          <div class="stat-label">Temperature</div>
+          <div class="stat-value" id="tempValue">
+            4.2<span class="unit">°C</span>
+          </div>
+          <div class="temp-slider-container">
+            <input
+              type="range"
+              class="temp-slider"
+              id="tempSlider"
+              min="1"
+              max="60"
+              value="4"
+            />
+          </div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-label">Battery</div>
+          <div class="stat-value" style="color: #00ff88" id="batteryValue">
+            87<span class="unit">%</span>
+          </div>
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              id="batteryFill"
+              style="
+                width: 87%;
+                background: linear-gradient(90deg, #00ff88, #00d4ff);
+              "
+            ></div>
+          </div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-label">LED Color</div>
+          <div class="color-buttons">
+            <div
+              class="color-btn active"
+              style="background: #00d4ff; color: #00d4ff"
+              data-color="0x00d4ff"
+              onclick="setColor(this)"
+            ></div>
+            <div
+              class="color-btn"
+              style="background: #00ff88; color: #00ff88"
+              data-color="0x00ff88"
+              onclick="setColor(this)"
+            ></div>
+            <div
+              class="color-btn"
+              style="background: #ff00aa; color: #ff00aa"
+              data-color="0xff00aa"
+              onclick="setColor(this)"
+            ></div>
+            <div
+              class="color-btn"
+              style="background: #ffaa00; color: #ffaa00"
+              data-color="0xffaa00"
+              onclick="setColor(this)"
+            ></div>
+            <div
+              class="color-btn"
+              style="background: #aa00ff; color: #aa00ff"
+              data-color="0xaa00ff"
+              onclick="setColor(this)"
+            ></div>
+            <div
+              class="color-btn"
+              style="background: #ffffff; color: #ffffff"
+              data-color="0xffffff"
+              onclick="setColor(this)"
+            ></div>
+          </div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-label">Light Mode</div>
+          <button class="mode-btn active" id="modeBtn" onclick="toggleMode()">
+            ● Breathing
+          </button>
+        </div>
+
+        <button class="mode-btn" onclick="toggleReminder()">
+          🔔 Reminders
+        </button>
+      </div>
+
+      <div class="bottom-bar">
+        <button class="action-btn" onclick="fillBottle()">REFILL</button>
+        <button class="action-btn" onclick="toggleAutoSpin()">
+          AUTO ROTATE
+        </button>
+        <button class="action-btn" onclick="explodeView()">EXPLODE VIEW</button>
+        <button class="action-btn" onclick="resetView()">RESET</button>
+      </div>
+
+      <div class="particle-hint">Drag to rotate • Scroll to zoom</div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+      let scene, camera, renderer, controls;
+      let bottleGroup, waterMesh, ledRingMesh, glowMesh;
+      let particleSystem;
+      let currentColor = new THREE.Color(0x00d4ff);
+      let targetColor = new THREE.Color(0x00d4ff);
+      let waterLevel = 0.72;
+      let targetWaterLevel = 0.72;
+      let autoSpin = true;
+      let isExploded = false;
+      let lightMode = "breathing";
+      let time = 0;
+      let bottleParts = [];
+      let reminderActive = false;
+
+      function init() {
+        scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x050510, 0.015);
+
+        camera = new THREE.PerspectiveCamera(
+          45,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          1000,
+        );
+        camera.position.set(5, 3, 8);
+
+        renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          alpha: true,
+          powerPreference: "high-performance",
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+        document
+          .getElementById("canvas-container")
+          .appendChild(renderer.domElement);
+
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI * 0.85;
+        controls.minDistance = 4;
+        controls.maxDistance = 15;
+        controls.target.set(0, 1.5, 0);
+
+        setupLights();
+        createBottle();
+        createEnvironment();
+        createParticles();
+
+        window.addEventListener("resize", onResize);
+        animate();
+      }
+
+      function setupLights() {
+        const ambientLight = new THREE.AmbientLight(0x111133, 0.5);
+        scene.add(ambientLight);
+
+        const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        mainLight.position.set(5, 10, 5);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 2048;
+        mainLight.shadow.mapSize.height = 2048;
+        mainLight.shadow.camera.near = 0.5;
+        mainLight.shadow.camera.far = 50;
+        scene.add(mainLight);
+
+        const rimLight = new THREE.DirectionalLight(0x00d4ff, 0.4);
+        rimLight.position.set(-5, 5, -5);
+        scene.add(rimLight);
+
+        const fillLight = new THREE.DirectionalLight(0x001133, 0.3);
+        fillLight.position.set(0, -5, 5);
+        scene.add(fillLight);
+
+        const pointLight1 = new THREE.PointLight(0x00d4ff, 0.5, 20);
+        pointLight1.position.set(3, 3, 3);
+        scene.add(pointLight1);
+      }
+
+      function createBottle() {
+        bottleGroup = new THREE.Group();
+
+        // Bottle body - using lathe geometry for smooth profile
+        const bodyPoints = [];
+        const segments = 60;
+
+        // Bottom curve
+        for (let i = 0; i <= 10; i++) {
+          const t = i / 10;
+          const x = 0.9 * Math.sin(t * Math.PI * 0.5);
+          const y = t * 0.3;
+          bodyPoints.push(new THREE.Vector2(x, y));
+        }
+
+        // Main body
+        for (let i = 0; i <= 20; i++) {
+          const t = i / 20;
+          const y = 0.3 + t * 3.2;
+          const x = 0.9 + Math.sin(t * Math.PI) * 0.05;
+          bodyPoints.push(new THREE.Vector2(x, y));
+        }
+
+        // Shoulder
+        for (let i = 0; i <= 10; i++) {
+          const t = i / 10;
+          const y = 3.5 + t * 0.5;
+          const x = 0.9 - t * 0.3;
+          bodyPoints.push(new THREE.Vector2(x, y));
+        }
+
+        // Neck
+        for (let i = 0; i <= 5; i++) {
+          const t = i / 5;
+          const y = 4.0 + t * 0.3;
+          const x = 0.6;
+          bodyPoints.push(new THREE.Vector2(x, y));
+        }
+
+        const bodyGeometry = new THREE.LatheGeometry(bodyPoints, 64);
+
+        // Glass/transparent material for outer bottle
+        const glassMaterial = new THREE.MeshPhysicalMaterial({
+          color: 0x335566,
+          metalness: 0.1,
+          roughness: 0.05,
+          transmission: 0.85,
+          thickness: 0.5,
+          transparent: true,
+          opacity: 0.4,
+          envMapIntensity: 1.5,
+          clearcoat: 1.0,
+          clearcoatRoughness: 0.1,
+          ior: 1.5,
+          side: THREE.DoubleSide,
+        });
+
+        const bottleBody = new THREE.Mesh(bodyGeometry, glassMaterial);
+        bottleBody.castShadow = true;
+        bottleBody.receiveShadow = true;
+        bottleBody.userData = { originalY: 0, part: "body" };
+        bottleGroup.add(bottleBody);
+        bottleParts.push(bottleBody);
+
+        // Inner frosted layer
+        const innerPoints = bodyPoints.map(
+          (p) => new THREE.Vector2(p.x * 0.92, p.y),
+        );
+        const innerGeometry = new THREE.LatheGeometry(innerPoints, 64);
+        const innerMaterial = new THREE.MeshPhysicalMaterial({
+          color: 0x112233,
+          metalness: 0.0,
+          roughness: 0.3,
+          transparent: true,
+          opacity: 0.15,
+          side: THREE.BackSide,
+        });
+        const innerBody = new THREE.Mesh(innerGeometry, innerMaterial);
+        bottleGroup.add(innerBody);
+
+        // Water inside
+        createWater();
+
+        // Cap / Lid
+        const capGroup = new THREE.Group();
+
+        // Cap base
+        const capBaseGeo = new THREE.CylinderGeometry(0.65, 0.65, 0.15, 64);
+        const capMaterial = new THREE.MeshPhysicalMaterial({
+          color: 0x222222,
+          metalness: 0.9,
+          roughness: 0.2,
+          clearcoat: 0.5,
+        });
+        const capBase = new THREE.Mesh(capBaseGeo, capMaterial);
+        capBase.position.y = 4.35;
+        capGroup.add(capBase);
+
+        // Cap top - dome
+        const capDomeGeo = new THREE.SphereGeometry(
+          0.6,
+          64,
+          32,
+          0,
+          Math.PI * 2,
+          0,
+          Math.PI * 0.4,
+        );
+        const capDomeMat = new THREE.MeshPhysicalMaterial({
+          color: 0x333333,
+          metalness: 0.95,
+          roughness: 0.15,
+          clearcoat: 1.0,
+        });
+        const capDome = new THREE.Mesh(capDomeGeo, capDomeMat);
+        capDome.position.y = 4.42;
+        capGroup.add(capDome);
+
+        // Drinking spout
+        const spoutGeo = new THREE.CylinderGeometry(0.15, 0.2, 0.3, 32);
+        const spoutMat = new THREE.MeshPhysicalMaterial({
+          color: 0x444444,
+          metalness: 0.8,
+          roughness: 0.3,
+        });
+        const spout = new THREE.Mesh(spoutGeo, spoutMat);
+        spout.position.y = 4.6;
+        capGroup.add(spout);
+
+        capGroup.userData = { originalY: 0, part: "cap" };
+        bottleGroup.add(capGroup);
+        bottleParts.push(capGroup);
+
+        // LED Ring at bottom
+        const ledRingGeo = new THREE.TorusGeometry(0.88, 0.04, 16, 64);
+        const ledMaterial = new THREE.MeshBasicMaterial({
+          color: 0x00d4ff,
+          transparent: true,
+          opacity: 0.8,
+        });
+        ledRingMesh = new THREE.Mesh(ledRingGeo, ledMaterial);
+        ledRingMesh.rotation.x = Math.PI * 0.5;
+        ledRingMesh.position.y = 0.3;
+        ledRingMesh.userData = { originalY: 0.3, part: "led" };
+        bottleGroup.add(ledRingMesh);
+        bottleParts.push(ledRingMesh);
+
+        // LED Ring at top (near cap)
+        const ledRingTop = ledRingMesh.clone();
+        ledRingTop.position.y = 3.5;
+        ledRingTop.scale.set(0.95, 0.95, 0.95);
+        ledRingTop.userData = { originalY: 3.5, part: "ledTop" };
+        bottleGroup.add(ledRingTop);
+        bottleParts.push(ledRingTop);
+
+        // LED glow
+        const glowGeo = new THREE.CylinderGeometry(
+          0.95,
+          0.95,
+          0.3,
+          64,
+          1,
+          true,
+        );
+        const glowMat = new THREE.MeshBasicMaterial({
+          color: 0x00d4ff,
+          transparent: true,
+          opacity: 0.1,
+          side: THREE.DoubleSide,
+        });
+        glowMesh = new THREE.Mesh(glowGeo, glowMat);
+        glowMesh.position.y = 0.3;
+        bottleGroup.add(glowMesh);
+
+        // Digital display area (OLED screen)
+        const screenGeo = new THREE.PlaneGeometry(0.8, 0.4);
+        const screenCanvas = document.createElement("canvas");
+        screenCanvas.width = 256;
+        screenCanvas.height = 128;
+        const screenTexture = new THREE.CanvasTexture(screenCanvas);
+        const screenMat = new THREE.MeshBasicMaterial({
+          map: screenTexture,
+          transparent: true,
+          opacity: 0.9,
+        });
+        const screenMesh = new THREE.Mesh(screenGeo, screenMat);
+        screenMesh.position.set(0, 2.0, 0.92);
+        screenMesh.userData = {
+          canvas: screenCanvas,
+          texture: screenTexture,
+          originalY: 2.0,
+          part: "screen",
+        };
+        bottleGroup.add(screenMesh);
+        bottleParts.push(screenMesh);
+
+        // Measurement lines
+        for (let i = 1; i <= 5; i++) {
+          const lineGeo = new THREE.PlaneGeometry(0.3, 0.005);
+          const lineMat = new THREE.MeshBasicMaterial({
+            color: 0x00d4ff,
+            transparent: true,
+            opacity: 0.3,
+          });
+          const line = new THREE.Mesh(lineGeo, lineMat);
+          line.position.set(0, 0.5 + i * 0.55, 0.91);
+          bottleGroup.add(line);
+        }
+
+        // Bottom base - rubber grip
+        const baseGeo = new THREE.CylinderGeometry(0.92, 0.88, 0.15, 64);
+        const baseMat = new THREE.MeshPhysicalMaterial({
+          color: 0x111111,
+          metalness: 0.1,
+          roughness: 0.9,
+        });
+        const base = new THREE.Mesh(baseGeo, baseMat);
+        base.position.y = 0.075;
+        base.receiveShadow = true;
+        base.userData = { originalY: 0.075, part: "base" };
+        bottleGroup.add(base);
+        bottleParts.push(base);
+
+        // Grip texture bands
+        for (let i = 0; i < 8; i++) {
+          const gripGeo = new THREE.TorusGeometry(0.92, 0.008, 8, 64);
+          const gripMat = new THREE.MeshPhysicalMaterial({
+            color: 0x222233,
+            metalness: 0.3,
+            roughness: 0.7,
+            transparent: true,
+            opacity: 0.5,
+          });
+          const grip = new THREE.Mesh(gripGeo, gripMat);
+          grip.rotation.x = Math.PI * 0.5;
+          grip.position.y = 1.0 + i * 0.3;
+          bottleGroup.add(grip);
+        }
+
+        // Touch sensor indicator
+        const sensorGeo = new THREE.RingGeometry(0.08, 0.12, 32);
+        const sensorMat = new THREE.MeshBasicMaterial({
+          color: 0x00d4ff,
+          transparent: true,
+          opacity: 0.4,
+          side: THREE.DoubleSide,
+        });
+        const sensor = new THREE.Mesh(sensorGeo, sensorMat);
+        sensor.position.set(0, 3.2, 0.92);
+        bottleGroup.add(sensor);
+
+        bottleGroup.position.y = -0.5;
+        scene.add(bottleGroup);
+      }
+
+      function createWater() {
+        const waterPoints = [];
+        for (let i = 0; i <= 10; i++) {
+          const t = i / 10;
+          const x = 0.82 * Math.sin(t * Math.PI * 0.5);
+          const y = t * 0.3;
+          waterPoints.push(new THREE.Vector2(x, y));
+        }
+        for (let i = 0; i <= 20; i++) {
+          const t = i / 20;
+          const y = 0.3 + t * 3.2 * waterLevel;
+          const x = 0.82 + Math.sin(t * Math.PI) * 0.04;
+          waterPoints.push(new THREE.Vector2(x, y));
+        }
+        // Top cap of water
+        waterPoints.push(new THREE.Vector2(0, 0.3 + 3.2 * waterLevel));
+
+        const waterGeometry = new THREE.LatheGeometry(waterPoints, 64);
+        const waterMaterial = new THREE.MeshPhysicalMaterial({
+          color: 0x0088cc,
+          metalness: 0.0,
+          roughness: 0.1,
+          transmission: 0.6,
+          thickness: 1.0,
+          transparent: true,
+          opacity: 0.5,
+          ior: 1.33,
+          side: THREE.DoubleSide,
+        });
+
+        if (waterMesh) {
+          bottleGroup.remove(waterMesh);
+          waterMesh.geometry.dispose();
+        }
+
+        waterMesh = new THREE.Mesh(waterGeometry, waterMaterial);
+        waterMesh.userData = { part: "water" };
+        bottleGroup.add(waterMesh);
+      }
+
+      function createEnvironment() {
+        // Ground plane with reflection
+        const groundGeo = new THREE.PlaneGeometry(50, 50);
+        const groundMat = new THREE.MeshPhysicalMaterial({
+          color: 0x080818,
+          metalness: 0.8,
+          roughness: 0.3,
+          transparent: true,
+          opacity: 0.8,
+        });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI * 0.5;
+        ground.position.y = -0.5;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // Grid
+        const gridHelper = new THREE.GridHelper(30, 60, 0x001122, 0x001122);
+        gridHelper.position.y = -0.49;
+        gridHelper.material.transparent = true;
+        gridHelper.material.opacity = 0.3;
+        scene.add(gridHelper);
+
+        // Floating rings decoration
+        for (let i = 0; i < 3; i++) {
+          const ringGeo = new THREE.TorusGeometry(2 + i * 1.5, 0.01, 8, 128);
+          const ringMat = new THREE.MeshBasicMaterial({
+            color: 0x00d4ff,
+            transparent: true,
+            opacity: 0.1 - i * 0.02,
+          });
+          const ring = new THREE.Mesh(ringGeo, ringMat);
+          ring.rotation.x = Math.PI * 0.5;
+          ring.position.y = -0.45;
+          ring.userData = {
+            rotSpeed: 0.001 * (i + 1) * (i % 2 === 0 ? 1 : -1),
+          };
+          scene.add(ring);
+        }
+      }
+
+      function createParticles() {
+        const particleCount = 500;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const sizes = new Float32Array(particleCount);
+        const opacities = new Float32Array(particleCount);
+
+        for (let i = 0; i < particleCount; i++) {
+          positions[i * 3] = (Math.random() - 0.5) * 20;
+          positions[i * 3 + 1] = Math.random() * 10;
+          positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+          sizes[i] = Math.random() * 3 + 1;
+          opacities[i] = Math.random();
+        }
+
+        geometry.setAttribute(
+          "position",
+          new THREE.BufferAttribute(positions, 3),
+        );
+        geometry.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
+
+        const particleMaterial = new THREE.PointsMaterial({
+          color: 0x00d4ff,
+          size: 0.03,
+          transparent: true,
+          opacity: 0.3,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
+
+        particleSystem = new THREE.Points(geometry, particleMaterial);
+        scene.add(particleSystem);
+      }
+
+      function updateScreen(screenData) {
+        const canvas = screenData.canvas;
+        const ctx = canvas.getContext("2d");
+        const texture = screenData.texture;
+
+        ctx.clearRect(0, 0, 256, 128);
+
+        // Background
+        const gradient = ctx.createLinearGradient(0, 0, 0, 128);
+        gradient.addColorStop(0, "rgba(0,10,20,0.95)");
+        gradient.addColorStop(1, "rgba(0,5,15,0.95)");
+        ctx.fillStyle = gradient;
+        ctx.roundRect(5, 5, 246, 118, 8);
+        ctx.fill();
+
+        // Border
+        ctx.strokeStyle = `rgba(${Math.round(currentColor.r * 255)},${Math.round(currentColor.g * 255)},${Math.round(currentColor.b * 255)},0.5)`;
+        ctx.lineWidth = 1;
+        ctx.roundRect(5, 5, 246, 118, 8);
+        ctx.stroke();
+
+        // Temperature
+        const tempVal = document.getElementById("tempSlider").value;
+        ctx.font = "bold 28px monospace";
+        ctx.fillStyle = `rgb(${Math.round(currentColor.r * 255)},${Math.round(currentColor.g * 255)},${Math.round(currentColor.b * 255)})`;
+        ctx.fillText(`${tempVal}°C`, 20, 42);
+
+        // Water level
+        ctx.font = "14px monospace";
+        ctx.fillStyle = "rgba(255,255,255,0.5)";
+        ctx.fillText("WATER", 20, 65);
+        ctx.font = "bold 20px monospace";
+        ctx.fillStyle = "#00ff88";
+        ctx.fillText(`${Math.round(waterLevel * 100)}%`, 20, 88);
+
+        // Time
+        const now = new Date();
+        ctx.font = "12px monospace";
+        ctx.fillStyle = "rgba(255,255,255,0.3)";
+        ctx.fillText(now.toLocaleTimeString(), 155, 42);
+
+        // Battery icon
+        ctx.fillStyle = "rgba(0,255,136,0.5)";
+        ctx.fillRect(180, 60, 50, 16);
+        ctx.fillStyle = "rgba(0,255,136,0.8)";
+        ctx.fillRect(180, 60, 50 * 0.87, 16);
+
+        // Animated dots
+        const dotPhase = (time * 2) % 3;
+        for (let i = 0; i < 3; i++) {
+          ctx.beginPath();
+          ctx.arc(180 + i * 15, 95, 3, 0, Math.PI * 2);
+          ctx.fillStyle =
+            i <= dotPhase
+              ? `rgba(${Math.round(currentColor.r * 255)},${Math.round(currentColor.g * 255)},${Math.round(currentColor.b * 255)},0.8)`
+              : "rgba(255,255,255,0.1)";
+          ctx.fill();
+        }
+
+        texture.needsUpdate = true;
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        time += 0.016;
+
+        controls.update();
+
+        // Auto spin
+        if (autoSpin && !controls.isDragging) {
+          bottleGroup.rotation.y += 0.003;
+        }
+
+        // Bottle hover animation
+        bottleGroup.position.y = -0.5 + Math.sin(time * 0.8) * 0.08;
+
+        // Color transition
+        currentColor.lerp(targetColor, 0.05);
+
+        // Update LED materials
+        if (ledRingMesh) {
+          let ledOpacity;
+          if (lightMode === "breathing") {
+            ledOpacity = 0.4 + Math.sin(time * 2) * 0.4;
+          } else if (lightMode === "pulse") {
+            ledOpacity = Math.abs(Math.sin(time * 5)) > 0.8 ? 1 : 0.1;
+          } else if (lightMode === "rainbow") {
+            const hue = (time * 0.1) % 1;
+            currentColor.setHSL(hue, 1, 0.5);
+            ledOpacity = 0.8;
+          } else {
+            ledOpacity = 0.8;
+          }
+
+          bottleGroup.traverse((child) => {
+            if (
+              child.isMesh &&
+              child.material &&
+              child.material.color &&
+              (child.userData.part === "led" ||
+                child.userData.part === "ledTop")
+            ) {
+              child.material.color.copy(currentColor);
+              child.material.opacity = ledOpacity;
+            }
+          });
+
+          if (glowMesh) {
+            glowMesh.material.color.copy(currentColor);
+            glowMesh.material.opacity = ledOpacity * 0.15;
+          }
+        }
+
+        // Smooth water level transition
+        if (Math.abs(waterLevel - targetWaterLevel) > 0.001) {
+          waterLevel += (targetWaterLevel - waterLevel) * 0.02;
+          createWater();
+          document.getElementById("waterFill").style.height =
+            waterLevel * 100 + "%";
+          document.getElementById("waterPercent").textContent =
+            Math.round(waterLevel * 100) + "%";
+        }
+
+        // Update screen display
+        bottleGroup.traverse((child) => {
+          if (child.userData && child.userData.canvas) {
+            updateScreen(child.userData);
+          }
+        });
+
+        // Animate particles
+        if (particleSystem) {
+          const positions = particleSystem.geometry.attributes.position.array;
+          for (let i = 0; i < positions.length; i += 3) {
+            positions[i + 1] += 0.002;
+            if (positions[i + 1] > 10) positions[i + 1] = 0;
+            positions[i] += Math.sin(time + i) * 0.001;
+          }
+          particleSystem.geometry.attributes.position.needsUpdate = true;
+          particleSystem.material.color.copy(currentColor);
+        }
+
+        // Rotate environment rings
+        scene.children.forEach((child) => {
+          if (child.userData && child.userData.rotSpeed) {
+            child.rotation.z += child.userData.rotSpeed;
+          }
+        });
+
+        // Explode animation
+        if (isExploded) {
+          bottleParts.forEach((part, i) => {
+            const targetY = (part.userData.originalY || 0) + (i - 2) * 1.5;
+            part.position.y += (targetY - part.position.y) * 0.05;
+          });
+        } else {
+          bottleParts.forEach((part) => {
+            const targetY = part.userData.originalY || 0;
+            part.position.y += (targetY - part.position.y) * 0.05;
+          });
+        }
+
+        renderer.render(scene, camera);
+      }
+
+      function setColor(btn) {
+        document
+          .querySelectorAll(".color-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const colorVal = parseInt(btn.dataset.color);
+        targetColor = new THREE.Color(colorVal);
+        if (lightMode === "rainbow") {
+          lightMode = "breathing";
+          document.getElementById("modeBtn").textContent = "● Breathing";
+        }
+        showNotification("LED color updated");
+      }
+
+      function toggleMode() {
+        const modes = ["breathing", "pulse", "rainbow", "solid"];
+        const modeNames = ["● Breathing", "◉ Pulse", "🌈 Rainbow", "○ Solid"];
+        const currentIndex = modes.indexOf(lightMode);
+        lightMode = modes[(currentIndex + 1) % modes.length];
+        document.getElementById("modeBtn").textContent =
+          modeNames[(currentIndex + 1) % modes.length];
+        showNotification(`Light mode: ${lightMode}`);
+      }
+
+      function drinkWater() {
+        const drinkAmount = 250;
+        targetWaterLevel = Math.max(0, targetWaterLevel - 0.1);
+        const currentIntake = parseInt(
+          document
+            .getElementById("intakeValue")
+            .textContent.replace(",", "")
+            .replace("ml", ""),
+        );
+        const newIntake = currentIntake + drinkAmount;
+        document.getElementById("intakeValue").innerHTML =
+          `${newIntake.toLocaleString()}<span class="unit">ml</span>`;
+
+        const progress = Math.min(100, (newIntake / 2500) * 100);
+        document.querySelector(".progress-fill").style.width = progress + "%";
+
+        showNotification(`+${drinkAmount}ml logged! Keep hydrating 💧`);
+      }
+
+      function fillBottle() {
+        targetWaterLevel = 1.0;
+        showNotification("Bottle refilled to 100%");
+      }
+
+      function toggleAutoSpin() {
+        autoSpin = !autoSpin;
+        showNotification(autoSpin ? "Auto-rotate ON" : "Auto-rotate OFF");
+      }
+
+      function explodeView() {
+        isExploded = !isExploded;
+        showNotification(isExploded ? "Exploded view ON" : "Assembled view");
+      }
+
+      function resetView() {
+        camera.position.set(5, 3, 8);
+        controls.target.set(0, 1.5, 0);
+        isExploded = false;
+        autoSpin = true;
+        targetWaterLevel = 0.72;
+        targetColor = new THREE.Color(0x00d4ff);
+        lightMode = "breathing";
+        document.getElementById("modeBtn").textContent = "● Breathing";
+        document.getElementById("tempSlider").value = 4;
+        document.getElementById("tempValue").innerHTML =
+          '4.2<span class="unit">°C</span>';
+        document.querySelectorAll(".color-btn").forEach((b, i) => {
+          b.classList.toggle("active", i === 0);
+        });
+        showNotification("Reset to default");
+      }
+
+      function toggleReminder() {
+        reminderActive = !reminderActive;
+        showNotification(
+          reminderActive
+            ? "🔔 Reminders ON - Every 30 min"
+            : "🔕 Reminders OFF",
+        );
+
+        if (reminderActive) {
+          setTimeout(() => {
+            if (reminderActive) {
+              showNotification("💧 Time to drink water!");
+            }
+          }, 30000);
+        }
+      }
+
+      function showNotification(msg) {
+        const notif = document.getElementById("notification");
+        notif.textContent = msg;
+        notif.classList.add("show");
+        setTimeout(() => notif.classList.remove("show"), 2500);
+      }
+
+      function onResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+
+      // Temperature slider
+      document.addEventListener("DOMContentLoaded", () => {
+        init();
+
+        document
+          .getElementById("tempSlider")
+          .addEventListener("input", function () {
+            const val = this.value;
+            document.getElementById("tempValue").innerHTML =
+              `${val}<span class="unit">°C</span>`;
+
+            if (val < 10) {
+              if (waterMesh) waterMesh.material.color.setHex(0x0066cc);
+            } else if (val > 40) {
+              if (waterMesh) waterMesh.material.color.setHex(0xcc4400);
+            } else {
+              if (waterMesh) waterMesh.material.color.setHex(0x0088cc);
+            }
+          });
+      });
+
+      // Canvas roundRect polyfill
+      if (!CanvasRenderingContext2D.prototype.roundRect) {
+        CanvasRenderingContext2D.prototype.roundRect = function (
+          x,
+          y,
+          w,
+          h,
+          r,
+        ) {
+          if (w < 2 * r) r = w / 2;
+          if (h < 2 * r) r = h / 2;
+          this.beginPath();
+          this.moveTo(x + r, y);
+          this.arcTo(x + w, y, x + w, y + h, r);
+          this.arcTo(x + w, y + h, x, y + h, r);
+          this.arcTo(x, y + h, x, y, r);
+          this.arcTo(x, y, x + w, y, r);
+          this.closePath();
+          return this;
+        };
+      }
+    </script>
   </body>
 </html>
+```
